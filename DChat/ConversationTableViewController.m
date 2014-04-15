@@ -9,8 +9,9 @@
 #import "ConversationTableViewController.h"
 #import "LoginStep1ViewController.h"
 #import "CRNavigationController.h"
+#import "PomeloManager.h"
 
-@interface ConversationTableViewController ()
+@interface ConversationTableViewController () <LoginStep1ViewControllerDelegate>
 
 @end
 
@@ -20,23 +21,34 @@
 {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
     
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
+    if (!isLogin) {
+        [self showLogin];
+    }
+    else {
+        if (![[PomeloManager sharedInstance] getIsPomeloConnected]) {
+            [[PomeloManager sharedInstance] setupClient];
+        }
+    }
+}
+
+#pragma mark login
+-(void)showLogin
+{
     setLogout;
     LoginStep1ViewController *vc = [[LoginStep1ViewController alloc] initWithNibName:@"LoginStep1ViewController" bundle:nil];
-//    vc.delegate                  = self;
+    vc.delegate                  = self;
     CRNavigationController *nav  = [[CRNavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:nav animated:NO completion:nil];
 }
 
-- (void)didReceiveMemoryWarning
+#pragma mark login delegate
+-(void)vertifySuccess
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self dismissViewControllerAnimated:NO completion:nil];
+    if (![[PomeloManager sharedInstance] getIsPomeloConnected]) {
+        [[PomeloManager sharedInstance] setupClient];
+    }
 }
 
 #pragma mark - Table view data source

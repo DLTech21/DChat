@@ -9,20 +9,29 @@
 #import "OnlineTableViewController.h"
 
 @interface OnlineTableViewController ()
-
+{
+    NSMutableArray *users;
+}
 @end
 
 @implementation OnlineTableViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        users = [NSMutableArray array];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(allUser:) name:ChatAllUserNotifaction object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(newUser:) name:ChatNewUserNotifaction object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(leaveUser:) name:ChatLeaveUserNotifaction object:nil];
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning
@@ -35,82 +44,62 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return users.count;
 }
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"user"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"user"];
+    }
+    cell.textLabel.text = [users objectAtIndex:indexPath.row];
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
 #pragma mark - Table view delegate
-
-// In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here, for example:
-    // Create the next view controller.
-    <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:<#@"Nib name"#> bundle:nil];
-    
-    // Pass the selected object to the new view controller.
-    
-    // Push the view controller.
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-*/
 
+#pragma mark notification
+-(void)allUser:(NSNotification *)notifacation
+{
+    NSArray *usersOnline = (NSArray *)notifacation.object;
+    for (NSString *user in usersOnline) {
+        if (![user isEqualToString:getUserID]) {
+            [users addObject:user];
+        }
+    }
+    [self.tableView reloadData];
+}
+
+-(void)newUser:(NSNotification *)notifacation
+{
+    NSString *user = (NSString *)notifacation.object;
+    [self.tableView beginUpdates];
+    [users addObject:user];
+    NSArray *paths = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:[users count]-1 inSection:0]];
+    [self.tableView insertRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
+}
+
+-(void)leaveUser:(NSNotification *)notifacation
+{
+    NSString *user = (NSString *)notifacation.object;
+    if ([users containsObject:user]) {
+        NSUInteger index = [users indexOfObject:user];
+        [users removeObjectAtIndex:index];
+        NSArray *paths = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]];
+        [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationLeft];
+    }
+}
 @end

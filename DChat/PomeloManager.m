@@ -42,9 +42,8 @@ static Pomelo *pomeloChat;
 {
     __weak id that = self;
     [pomeloChat connectToHost:@"192.168.1.147" onPort:3014 withCallback:^(Pomelo *p){
-        NSDictionary *params = [NSDictionary dictionaryWithObject:getUserID forKey:@"openid"];
+        NSDictionary *params = [NSDictionary dictionaryWithObject:getUserID forKey:@"uid"];
         [pomeloChat requestWithRoute:@"gate.gateHandler.queryEntry" andParams:params andCallback:^(NSDictionary *result){
-            debugLog(@"%@", result);
             [pomeloChat disconnectWithCallback:^(Pomelo *p){
                 [that entryWithData:result];
             }];
@@ -56,19 +55,18 @@ static Pomelo *pomeloChat;
 - (void)entryWithData:(NSDictionary *)data
 {
     @synchronized(data) {
-        debugLog(@"%i", isPomeloConnected);
-//        if (isPomeloConnected) {
-//            return;
-//        }
         NSString *host = [data objectForKey:@"host"];
         NSInteger port = [[data objectForKey:@"port"] intValue];
         __weak id that = self;
         [pomeloChat connectToHost:host onPort:port withCallback:^(Pomelo *p){
             NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    getUserID, @"openid",
+                                    getUserID, @"username",
                                     @"wechatim", @"rid",
                                     nil];
-            [p requestWithRoute:@"connector.entryHandler.entry" andParams:params andCallback:^(NSDictionary *result){
+            [p requestWithRoute:@"connector.entryHandler.enter" andParams:params andCallback:^(NSDictionary *result){
+                debugLog(@"%@", result);
+                NSArray *users = [result objectForKey:@"users"];
+                [[NSNotificationCenter defaultCenter] postNotificationName:ChatAllUserNotifaction object:users ];
                 [that initEvents];
                 [that findUnSendMessage];
             }];
@@ -134,13 +132,17 @@ static Pomelo *pomeloChat;
                           chatId:chatId
                           postAt:postAt];
            }];
-    [pomeloChat onRoute:@"onLeaveUser"
+    [pomeloChat onRoute:@"onLeave"
            withCallback:^(NSDictionary *data) {
                debugLog(@"%@", data);
+               NSString *user = [[data objectForKey:@"body"] objectForKey:@"user"];
+               [[NSNotificationCenter defaultCenter] postNotificationName:ChatLeaveUserNotifaction object:user ];
            }];
-    [pomeloChat onRoute:@"onAddUser"
+    [pomeloChat onRoute:@"onAdd"
            withCallback:^(NSDictionary *data) {
                debugLog(@"%@", data);
+               NSString *user = [[data objectForKey:@"body"] objectForKey:@"user"];
+               [[NSNotificationCenter defaultCenter] postNotificationName:ChatNewUserNotifaction object:user ];
            }];
 }
 
@@ -224,6 +226,7 @@ static Pomelo *pomeloChat;
 #pragma mark pomelo delegate
 -(void)Pomelo:(Pomelo *)pomelo didReceiveMessage:(NSArray *)message
 {
+    
 }
 
 -(void)PomeloDidConnect:(Pomelo *)pomelo

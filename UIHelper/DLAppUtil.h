@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @interface DLAppUtil : NSObject
-
+#define ChatAllUserNotifaction @"ChatAllUserNotifaction"
+#define ChatLeaveUserNotifaction @"ChatLeaveUserNotifaction"
+#define ChatNewUserNotifaction @"ChatNewUserNotifaction"
 #define ChatNewMsgNotifaction @"ChatNewMsgNotifaction"
 #define ChatUpdateMsgNotifaction @"ChatUpdateMsgNotifaction"
 

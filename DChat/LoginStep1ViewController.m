@@ -8,6 +8,7 @@
 
 #import "LoginStep1ViewController.h"
 #import "RegexUtil.h"
+#import "PomeloManager.h"
 
 @interface LoginStep1ViewController () <UITextFieldDelegate, UIAlertViewDelegate>
 {
@@ -62,7 +63,7 @@
     [addButton setTitleColor:UIColorFromRGB(0x088ec1, 1) forState:UIControlStateHighlighted];
     addButton.titleLabel.font              = [UIFont systemFontOfSize:14];
     [addButton setFrame:CGRectMake(0, 0, 65, 44)];
-//    [addButton addTarget:self action:@selector(step2) forControlEvents:UIControlEventTouchUpInside];
+    [addButton addTarget:self action:@selector(step2) forControlEvents:UIControlEventTouchUpInside];
     [addButton setBackgroundColor:UIColorFromRGB(0x29bb10, 1)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:addButton];
     [_mobileTF becomeFirstResponder];
@@ -72,7 +73,7 @@
 {
     if ([RegexUtil isMobileNo:_mobileTF.text]) {
         [_mobileTF resignFirstResponder];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确认手机号码" message:[NSString stringWithFormat:@"我们将发送验证码短信到这个号码:\n%@", _mobileTF.text] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"好", nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确认手机号码" message:[NSString stringWithFormat:@"验证这个号码:\n%@", _mobileTF.text] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"好", nil];
         [alert show];
     }
     else {
@@ -110,34 +111,8 @@
 //                                         failure:^(NSString *message) {
 //                                             [SVProgressHUD showErrorWithStatus:message];
 //                                         }];
-}
-
-#pragma mark count down
--(void)countDown
-{
-    __block int timeout=60; //倒计时时间
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_source_t _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
-    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
-    dispatch_source_set_event_handler(_timer, ^{
-        if(timeout<=0){ //倒计时结束，关闭
-            dispatch_source_cancel(_timer);
-//            dispatch_release(_timer);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                canVertify = YES;
-            });
-        }else{
-            //            int minutes = timeout / 60;
-            int seconds = timeout % 60;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                canVertify = NO;
-                leftSecond = seconds;
-            });
-            timeout--;
-            
-        }
-    });
-    dispatch_resume(_timer);
+    setUserID(mobile);
+    [self vertifyMobileSuccess];
 }
 
 #pragma mark alertview delegate

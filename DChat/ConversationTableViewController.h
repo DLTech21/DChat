@@ -10,4 +10,6 @@
 
 @interface ConversationTableViewController : UITableViewController
 
+-(void)chatSomebody:(NSString *)user;
+
 @end

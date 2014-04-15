@@ -10,6 +10,7 @@
 #import "LoginStep1ViewController.h"
 #import "CRNavigationController.h"
 #import "PomeloManager.h"
+#import "ChattingViewController.h"
 
 @interface ConversationTableViewController () <LoginStep1ViewControllerDelegate>
 
@@ -21,15 +22,29 @@
 {
     [super viewDidLoad];
     
-    
     if (!isLogin) {
         [self showLogin];
     }
     else {
-        if (![[PomeloManager sharedInstance] getIsPomeloConnected]) {
-            [[PomeloManager sharedInstance] setupClient];
-        }
+        [self registerPomelo];
     }
+}
+
+#pragma mark pomelomanager
+-(void)registerPomelo
+{
+    if (![[PomeloManager sharedInstance] getIsPomeloConnected]) {
+        [[PomeloManager sharedInstance] setupClient];
+    }
+}
+
+#pragma mark chat somebody
+-(void)chatSomebody:(NSString *)user
+{
+    ChattingViewController *vc = [[ChattingViewController alloc] init];
+    vc.roomId = user;
+    vc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark login

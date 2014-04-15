@@ -7,6 +7,8 @@
 //
 
 #import "OnlineTableViewController.h"
+#import "CRNavigationController.h"
+#import "ConversationTableViewController.h"
 
 @interface OnlineTableViewController ()
 {
@@ -68,9 +70,19 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSString *user = [users objectAtIndex:indexPath.row];
+    [self showChat:user];
 }
 
-#pragma mark notification
+-(void)showChat:(NSString *)user
+{
+    [self.tabBarController setSelectedIndex:0];
+    CRNavigationController *nav = (CRNavigationController *)[self.tabBarController.viewControllers objectAtIndex:0];
+    ConversationTableViewController *vc = (ConversationTableViewController *)[nav.viewControllers objectAtIndex:0];
+    [vc chatSomebody:user];
+}
+
+#pragma mark user notification
 -(void)allUser:(NSNotification *)notifacation
 {
     NSArray *usersOnline = (NSArray *)notifacation.object;

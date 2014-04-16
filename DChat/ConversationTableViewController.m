@@ -11,9 +11,12 @@
 #import "CRNavigationController.h"
 #import "PomeloManager.h"
 #import "ChattingViewController.h"
+#import "MessageManager.h"
 
 @interface ConversationTableViewController () <LoginStep1ViewControllerDelegate>
-
+{
+    NSMutableArray *conversations;
+}
 @end
 
 @implementation ConversationTableViewController
@@ -21,13 +24,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    conversations = [NSMutableArray array];
+    UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView setTableFooterView:v];
     if (!isLogin) {
         [self showLogin];
     }
     else {
         [self registerPomelo];
     }
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [conversations removeAllObjects];
+    [conversations addObjectsFromArray:[MessageManager getConversations]];
+    [self.tableView reloadData];
 }
 
 #pragma mark pomelomanager
@@ -44,7 +57,7 @@
     ChattingViewController *vc = [[ChattingViewController alloc] init];
     vc.roomId = user;
     vc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:vc animated:YES];
+    [self.navigationController pushViewController:vc animated:NO];
 }
 
 #pragma mark login
@@ -70,28 +83,33 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return conversations.count;
 }
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"user"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"user"];
+    }
+    IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
+    cell.textLabel.text = conversation.roomId;
+    cell.detailTextLabel.text = conversation.content;
+    if (conversations.count-1 == indexPath.row) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    else {
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 15, 0, 0)];
+    }
     return cell;
 }
-*/
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -131,21 +149,14 @@
 }
 */
 
-/*
-#pragma mark - Table view delegate
 
-// In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
+#pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here, for example:
-    // Create the next view controller.
-    <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:<#@"Nib name"#> bundle:nil];
-    
-    // Pass the selected object to the new view controller.
-    
-    // Push the view controller.
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    IMMessage *user = [conversations objectAtIndex:indexPath.row];
+    [self chatSomebody:user.roomId];
 }
-*/
+
 
 @end

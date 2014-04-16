@@ -88,13 +88,14 @@ static Pomelo *pomeloChat;
                                 immsg.roomId, @"roomId",
                                 immsg.content, @"content",
                                 immsg.time, @"msgId",
+                                immsg.roomId, @"target",
                                 nil];
         @try {
             [[[PomeloManager sharedInstance] getPomeloClient] requestWithRoute:@"chat.chatHandler.send"
                                                                      andParams:params
                                                                    andCallback:^(NSDictionary * data) {
                                                                        NSString *openId = [data  objectForKey:@"sender"];
-                                                                       NSString *roomId = [data  objectForKey:@"room_id"];
+                                                                       NSString *roomId = immsg.roomId;
                                                                        NSString *msgId  = [data  objectForKey:@"msg_id"];
                                                                        NSString *postAt = [data objectForKey:@"post_at"];
                                                                        NSInteger chatId = [[data objectForKey:@"chat_id"] integerValue];
@@ -119,17 +120,16 @@ static Pomelo *pomeloChat;
            withCallback:^(NSDictionary *data){
                debugLog(@"%@", data);
                NSString *openId  = [[data objectForKey:@"body"] objectForKey:@"sender"];
-               NSString *roomId  = [[data objectForKey:@"body"] objectForKey:@"room_id"];
+               NSString *roomId  = openId;
                NSString *content = [[data objectForKey:@"body"] objectForKey:@"msg"];
                NSString *postAt  = [[data objectForKey:@"body"] objectForKey:@"post_at"];
-               NSInteger chatId  = [[[data objectForKey:@"body"] objectForKey:@"chat_id"] integerValue];
                [that saveMessage:content
                             time:postAt
                           roomId:roomId
                           openId:openId
                          msgType:JSBubbleMessageTypeIncoming
                        msgStatus:JSBubbleMessageStatusReceiving
-                          chatId:chatId
+                          chatId:1
                           postAt:postAt];
            }];
     [pomeloChat onRoute:@"onLeave"
@@ -167,7 +167,8 @@ static Pomelo *pomeloChat;
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
                             roomId, @"roomId",
                             messageContent, @"content",
-                            [Tool getTimeStamp], @"msgId",
+                            time, @"msgId",
+                            roomId, @"target",
                             nil];
     @try {
         [[[PomeloManager sharedInstance] getPomeloClient] requestWithRoute:@"chat.chatHandler.send"

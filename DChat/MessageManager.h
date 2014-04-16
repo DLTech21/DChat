@@ -14,13 +14,6 @@
 
 +(BOOL)saveIMMessage:(IMMessage *)imMessage;
 
-+(void)getFirstMessageListByFrom:(NSString *)roomId
-                        callback:(void (^) (NSArray *array))callback;
-
-+(void)getMessageListByFrom:(NSString *)roomId
-                      maxId:(NSString *)maxId
-                   callback:(void (^) (NSArray *array))callback;
-
 +(NSArray *)getMessageListByFrom:(NSString *)roomId
                            maxId:(NSString *)maxId;
 
@@ -42,4 +35,6 @@
 +(BOOL)updateChatIdBy:(IMMessage *)immsg;
 
 +(BOOL)isIMMessageExist:(IMMessage *)immsg;
+
++(NSArray *)getConversations;
 @end

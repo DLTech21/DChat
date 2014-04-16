@@ -12,7 +12,7 @@
 
 @property (nonatomic        ) NSNumber  * msgStatus;
 @property (nonatomic        ) NSNumber  * msgType; //who owns
-@property (nonatomic        ) NSNumber  * mediaType; //who owns
+@property (nonatomic        ) NSNumber  * mediaType;
 @property (nonatomic, strong) NSString  * content;
 @property (nonatomic, strong) NSString  * time;
 @property (nonatomic, strong) NSString  * openId;

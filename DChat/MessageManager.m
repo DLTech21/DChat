@@ -44,29 +44,6 @@
     return worked;
 }
 
-+(void)getFirstMessageListByFrom:(NSString *)roomId
-                        callback:(void (^) (NSArray *array))callback
-{
-    NSString *maxId = @"0";
-    NSArray *array = [self getMessageListByFrom:roomId
-                                          maxId:maxId];
-    if (callback) {
-        if (array.count > 0) {
-            callback(array);
-            [self getMessageListByFrom:roomId
-                                 maxId:maxId
-                              callback:nil];
-        }
-        else {
-            [self getMessageListByFrom:roomId
-                                 maxId:maxId
-                              callback:^(NSArray *array1) {
-                                  callback(array1);
-                              }];
-        }
-    }
-}
-
 //本地数据库
 +(NSArray *)getMessageListByFrom:(NSString *)roomId
                            maxId:(NSString *)maxId
@@ -81,11 +58,11 @@
         FMResultSet *rs ;
         if ([maxId isEqualToString:@"0"]) {
 			sql = @"select * from im_msg where room_id=? and msg_status!=? order by msg_time desc limit ? ";
-			rs = [db executeQuery:sql, roomId, [NSNumber numberWithInteger:JSBubbleMessageStatusDelivering], [NSNumber numberWithInt:30]];
+			rs = [db executeQuery:sql, roomId, [NSNumber numberWithInteger:JSBubbleMessageStatusDelivering], [NSNumber numberWithInt:10]];
 		}
 		else {
-			sql = @"select * from im_msg where room_id=? and chat_id<? and chat_id!=-1 order by msg_time desc limit ? ";
-			rs = [db executeQuery:sql, roomId, maxId, [NSNumber numberWithInt:30]];
+			sql = @"select * from im_msg where room_id=? and msg_status!=? and msg_time<? order by msg_time desc limit ? ";
+			rs = [db executeQuery:sql, roomId, [NSNumber numberWithInteger:JSBubbleMessageStatusDelivering], maxId, [NSNumber numberWithInt:10]];
 		}
         while ([rs next]) {
             NSString *content    = [rs stringForColumn:@"content"];
@@ -192,36 +169,6 @@
     return array;
 }
 
-//服务器
-+(void)getMessageListByFrom:(NSString *)roomId
-                      maxId:(NSString *)maxId
-                   callback:(void (^) (NSArray *array))callback
-{
-    __weak id that = self;
-//    [[AppClient sharedInstance] getHistoryChat:roomId maxid:maxId
-//                                         count:nil
-//                                       success:^(NSDictionary *model) {
-//                                           NSMutableArray *array = [IMMessage handleJson:model];
-//                                           for (IMMessage *immsg in array) {
-//                                               [that updateChatIdBy:immsg];
-//                                               if (![that isIMMessageExist:immsg]) {
-//                                                   [that saveIMMessageOutNoti:immsg];
-//                                               }
-//                                           }
-//                                           if (callback) {
-//                                               NSArray *temp = [that getMessageListByFrom:roomId
-//                                                                                    maxId:maxId];
-//                                               callback(temp);
-//                                           }
-//                                       }
-//                                       failure:^(NSString *message) {
-//                                           if (callback) {
-//                                               NSArray *temp = [that getMessageListByFrom:roomId
-//                                                                                    maxId:maxId];
-//                                               callback(temp);
-//                                           }
-//                                       }];
-}
 
 +(void)updateMessagesByroomId:(NSString *)roomId
                             openId:(NSString *)openId
@@ -277,4 +224,44 @@
     return worked;
 }
 
+//本地数据库
++(NSArray *)getConversations
+{
+    FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
+    [db open];
+    NSString *createStr=@"CREATE TABLE IF NOT EXISTS [im_msg] ([_id] INTEGER NOT NULL  PRIMARY KEY AUTOINCREMENT, [content] NVARCHAR, [openid] NVARCHAR, [room_id] NVARCHAR, [msg_time] TEXT, [msg_type] INTEGER, [msg_status] INTEGER, [media_type] INTEGER, [chat_id] INTEGER, [post_at] TEXT);";
+    [db executeUpdate:createStr];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    if ([db open]) {
+        NSString *sql ;
+        FMResultSet *rs ;
+        sql = @"select *, max(msg_time), count(content) from im_msg group by room_id;";
+        rs = [db executeQuery:sql];
+        while ([rs next]) {
+            NSString *content    = [rs stringForColumn:@"content"];
+            NSString *openId     = [rs stringForColumn:@"openid"];
+            NSString *msg_time   = [rs stringForColumn:@"max(msg_time)"];
+            NSString *roomId     = [rs stringForColumn:@"room_id"];
+            NSInteger msg_type   = [rs intForColumn:@"msg_type"];
+            NSInteger status     = [rs intForColumn:@"msg_status"];
+            NSInteger mediaType  = [rs intForColumn:@"media_type"];
+            NSInteger chatId     = [rs intForColumn:@"chat_id"];
+            NSString *postAt     = [rs stringForColumn:@"post_at"];
+            IMMessage *imMessage = [IMMessage initIMMessage:roomId
+                                                     openId:openId
+                                                    content:content
+                                                       time:msg_time
+                                                    msgType:msg_type
+                                                  msgStatus:status
+                                                  mediaType:mediaType
+                                                     chatId:chatId
+                                                     postAt:postAt];
+            [array addObject:imMessage];
+        }
+        [db close];
+    }
+    NSMutableArray *sortArray = [NSMutableArray array];
+    [sortArray addObjectsFromArray:[array sortedArrayUsingSelector:@selector(compare:)]];
+    return sortArray;
+}
 @end

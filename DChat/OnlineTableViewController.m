@@ -33,7 +33,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView setTableFooterView:v];
 }
 
 - (void)didReceiveMemoryWarning
@@ -62,6 +63,12 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"user"];
     }
     cell.textLabel.text = [users objectAtIndex:indexPath.row];
+    if (users.count-1 == indexPath.row) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    else {
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 15, 0, 0)];
+    }
     return cell;
 }
 

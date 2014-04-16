@@ -14,7 +14,7 @@
 #import "UIView+Utils.h"
 
 
-#define PageSize 30
+#define PageSize 10
 #define AvatarPlaceHolderImage [UIImage imageNamed:@"avatar-placeholder"]
 
 @interface ChattingViewController () <JSMessagesViewDataSource, JSMessagesViewDelegate>
@@ -42,11 +42,7 @@
     [self setBackgroundColor:[UIColor whiteColor]];
     
     self.messages = [NSMutableArray array];
-    __weak id that = self;
-    [MessageManager getFirstMessageListByFrom:_roomId
-                                     callback:^(NSArray *array) {
-                                         [that handleArray:array];
-                                     }];
+    [self handleArray:[MessageManager getMessageListByFrom:_roomId maxId:@"0"]];
     UITapGestureRecognizer *tapToHideKeyboard = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard:)];
     [self.tableView addGestureRecognizer:tapToHideKeyboard];
 }
@@ -112,17 +108,16 @@
                                  messageContent:text
                                         success:^(NSDictionary *data) {
                                             NSString *openId = [data  objectForKey:@"sender"];
-                                            NSString *roomId = [data  objectForKey:@"room_id"];
+                                            NSString *roomId = _roomId;
                                             NSString *msgId  = [data  objectForKey:@"msg_id"];
                                             NSString *postAt = [data objectForKey:@"post_at"];
-                                            NSInteger chatId = [[data objectForKey:@"chat_id"] integerValue];
                                             //update ui
                                             for (IMMessage *immsg in self.messages) {
                                                 if ([immsg.msgStatus integerValue] == JSBubbleMessageStatusDelivering && [immsg.time isEqualToString:msgId]) {
                                                     immsg.msgStatus = [NSNumber numberWithInteger:JSBubbleMessageStatusReaded];
                                                     immsg.time = postAt;
                                                     immsg.postAt = postAt;
-                                                    immsg.chatId = [NSNumber numberWithInteger:chatId];
+                                                    immsg.chatId = [NSNumber numberWithInteger:1];
                                                     [MessageManager updateMessagesByroomId:roomId
                                                                                     openId:openId
                                                                                      msgId:msgId
@@ -374,23 +369,15 @@
 {
     if (scrollView.contentOffset.y < 20 && tableviewDataState == TABLEVIEW_DATA_MORE) {
         tableviewDataState = TABLEVIEW_DATA_LOADING;
-        [self performSelector:@selector(getHistory) withObject:nil afterDelay:0.3];
+        [self getHistory];
     }
 }
 
 -(void)getHistory
 {
     if (self.messages.count) {
-        NSInteger maxId = [[[self.messages objectAtIndex:0] chatId] integerValue];
-        if (maxId == -1) {
-            return;
-        }
-        __weak id that = self;
-        [MessageManager getMessageListByFrom:_roomId
-                                       maxId:[NSString stringWithFormat:@"%i", maxId]
-                                    callback:^(NSArray *array) {
-                                        [that handleHistory:array];
-                                    }];
+        NSString *maxId = [[self.messages objectAtIndex:0] time] ;
+        [self handleHistory:[MessageManager getMessageListByFrom:_roomId maxId:maxId]];
     }
 }
 

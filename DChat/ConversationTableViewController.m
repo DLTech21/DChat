@@ -24,6 +24,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newMsgCome:) name:ChatNewMsgNotifaction object:nil];
     conversations = [NSMutableArray array];
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
@@ -158,5 +159,11 @@
     [self chatSomebody:user.roomId];
 }
 
-
+#pragma mark  接受更新UI消息广播
+-(void)newMsgCome:(NSNotification *)notifacation
+{
+    [conversations removeAllObjects];
+    [conversations addObjectsFromArray:[MessageManager getConversations]];
+    [self.tableView reloadData];
+}
 @end

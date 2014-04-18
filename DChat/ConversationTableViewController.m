@@ -14,7 +14,7 @@
 #import "MessageManager.h"
 #import "TDBadgedCell.h"
 
-@interface ConversationTableViewController () <LoginStep1ViewControllerDelegate>
+@interface ConversationTableViewController () <LoginStep1ViewControllerDelegate, ChattingViewControllerDelegate>
 {
     NSMutableArray *conversations;
 }
@@ -35,11 +35,6 @@
     else {
         [self registerPomelo];
     }
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
     NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
@@ -80,7 +75,18 @@
     ChattingViewController *vc = [[ChattingViewController alloc] init];
     vc.roomId = user;
     vc.hidesBottomBarWhenPushed = YES;
+    vc.chatDelegate = self;
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+#pragma mark chat delegate
+-(void)updateConversationBadge
+{
+    [conversations removeAllObjects];
+    [conversations addObjectsFromArray:[MessageManager getConversations]];
+    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
+    [self setBadge:unReadedConversations];
+    [self.tableView reloadData];
 }
 
 #pragma mark login
@@ -189,6 +195,8 @@
 {
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
+    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
+    [self setBadge:unReadedConversations];
     [self.tableView reloadData];
 }
 @end

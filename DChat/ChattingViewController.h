@@ -8,8 +8,15 @@
 
 #import "JSMessagesViewController.h"
 
+@protocol ChattingViewControllerDelegate <NSObject>
+
+-(void)updateConversationBadge;
+
+@end
+
 @interface ChattingViewController : JSMessagesViewController
 
 @property (nonatomic, strong) NSString *roomId;
+@property (nonatomic, assign) id<ChattingViewControllerDelegate> chatDelegate;
 
 @end

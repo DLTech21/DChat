@@ -19,6 +19,7 @@
 {
     NSMutableArray *conversations;
     NSInteger badge;
+    NSMutableArray *searchResults;
 }
 @end
 
@@ -29,6 +30,7 @@
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newMsgCome:) name:ChatNewMsgNotifaction object:nil];
     conversations = [NSMutableArray array];
+    searchResults = [NSMutableArray array];
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
     if (!isLogin) {
@@ -119,7 +121,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return conversations.count;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        return [searchResults count];
+    }
+	else
+	{
+        return [conversations count];
+    }
 }
 
 
@@ -128,7 +137,16 @@
     static NSString *CellIdentifier;
     CellIdentifier = @"conversationcell";
     TDBadgedCell *cell = [[TDBadgedCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] ;
-    IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
+    IMMessage *conversation;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        conversation = [searchResults objectAtIndex:indexPath.row];
+    }
+	else
+	{
+        conversation = [conversations objectAtIndex:indexPath.row];
+    }
+    
     cell.textLabel.text = conversation.roomId;
     cell.detailTextLabel.text = conversation.content;
     cell.badgeString = conversation.noticeSum;
@@ -150,21 +168,24 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
-        badge -= [conversation.noticeSum integerValue];
-        if (badge != 0) {
-            [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
+    if (tableView == self.tableView) {
+        if (editingStyle == UITableViewCellEditingStyleDelete) {
+            IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
+            badge -= [conversation.noticeSum integerValue];
+            if (badge != 0) {
+                [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
+            }
+            else {
+                [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:nil];
+            }
+            [MessageManager deleteMessages:conversation.roomId];
+            [conversations removeObjectAtIndex:indexPath.row];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
-        else {
-            [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:nil];
-        }
-        [MessageManager deleteMessages:conversation.roomId];
-        [conversations removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
+    
 }
 
 /*
@@ -183,38 +204,35 @@
 }
 */
 #pragma mark   搜索
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString;
-{
-    return NO;
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
-{
-    [self searchConversation:searchBar.text];
-}
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
-{
-    [self searchConversation:searchBar.text];
-}
-
--(void)searchConversation:(NSString *)key
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     NSArray *temp = [MessageManager getConversations];
-    [conversations removeAllObjects];
+    [searchResults removeAllObjects];
     for (IMMessage *im in temp) {
-        if ([im.roomId contains:key]) {
-            [conversations addObject:im];
+        if ([im.roomId contains:searchString]) {
+            [searchResults addObject:im];
         }
     }
-    debugLog(@"%i", conversations.count);
-    [self.searchDisplayController.searchResultsTableView reloadData];
+    return YES;
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption
+{
+    NSString *searchString = [self.searchDisplayController.searchBar text];
+    NSArray *temp = [MessageManager getConversations];
+    [searchResults removeAllObjects];
+    for (IMMessage *im in temp) {
+        if ([im.roomId contains:searchString]) {
+            [searchResults addObject:im];
+        }
+    }
+    return YES;
 }
 
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self.view endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     IMMessage *user = [conversations objectAtIndex:indexPath.row];
     [self chatSomebody:user.roomId];

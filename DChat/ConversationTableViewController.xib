@@ -6,6 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ConversationTableViewController">
             <connections>
+                <outlet property="searchDisplayController" destination="CDy-Rk-vfb" id="cZz-kO-eRG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -16,10 +17,27 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <searchBar key="tableHeaderView" contentMode="redraw" id="p2k-nm-sbf">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                <textInputTraits key="textInputTraits"/>
+                <connections>
+                    <outlet property="delegate" destination="-1" id="0Yu-tz-nDE"/>
+                </connections>
+            </searchBar>
             <connections>
                 <outlet property="dataSource" destination="-1" id="Tng-2m-Rnh"/>
                 <outlet property="delegate" destination="-1" id="9aC-8N-iBw"/>
             </connections>
         </tableView>
+        <searchDisplayController id="CDy-Rk-vfb">
+            <connections>
+                <outlet property="delegate" destination="-1" id="nJN-Ze-tvZ"/>
+                <outlet property="searchBar" destination="p2k-nm-sbf" id="WMp-tK-XHU"/>
+                <outlet property="searchContentsController" destination="-1" id="A8R-yX-zUT"/>
+                <outlet property="searchResultsDataSource" destination="-1" id="1L9-to-a5v"/>
+                <outlet property="searchResultsDelegate" destination="-1" id="WO3-GH-wWm"/>
+            </connections>
+        </searchDisplayController>
     </objects>
 </document>

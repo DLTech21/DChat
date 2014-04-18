@@ -40,4 +40,6 @@
 +(NSArray *)getUnReadedConversations;
 
 +(void)updateMessagesReaded:(NSString *)roomId;
+
++(void)deleteMessages:(NSString *)roomId;
 @end

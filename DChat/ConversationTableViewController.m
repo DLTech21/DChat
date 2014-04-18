@@ -13,10 +13,12 @@
 #import "ChattingViewController.h"
 #import "MessageManager.h"
 #import "TDBadgedCell.h"
+#import "NSString+Wrapper.h"
 
-@interface ConversationTableViewController () <LoginStep1ViewControllerDelegate, ChattingViewControllerDelegate>
+@interface ConversationTableViewController () <LoginStep1ViewControllerDelegate, ChattingViewControllerDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
 {
     NSMutableArray *conversations;
+    NSInteger badge;
 }
 @end
 
@@ -44,7 +46,7 @@
 
 -(void)setBadge:(NSArray *)unReadedConversations
 {
-    NSInteger badge = 0;
+    badge = 0;
     for (IMMessage *conversation in unReadedConversations) {
         for (IMMessage *con in conversations) {
             if ([con.roomId isEqualToString:conversation.roomId]) {
@@ -129,41 +131,41 @@
     IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
     cell.textLabel.text = conversation.roomId;
     cell.detailTextLabel.text = conversation.content;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.badgeString = conversation.noticeSum;
     cell.badgeColor = UIColorFromRGB(0xff3b30, 1.0);
     cell.badge.fontSize = 16;
-    return cell;
     if (conversations.count-1 == indexPath.row) {
         [cell setSeparatorInset:UIEdgeInsetsZero];
     }
     else {
         [cell setSeparatorInset:UIEdgeInsetsMake(0, 15, 0, 0)];
     }
+    return cell;
 }
 
-
-/*
-// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the specified item to be editable.
     return YES;
 }
-*/
 
-/*
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
+        IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
+        badge -= [conversation.noticeSum integerValue];
+        if (badge != 0) {
+            [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
+        }
+        else {
+            [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:nil];
+        }
+        [MessageManager deleteMessages:conversation.roomId];
+        [conversations removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
 
 /*
 // Override to support rearranging the table view.
@@ -180,7 +182,35 @@
     return YES;
 }
 */
+#pragma mark   搜索
 
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString;
+{
+    return NO;
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
+{
+    [self searchConversation:searchBar.text];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    [self searchConversation:searchBar.text];
+}
+
+-(void)searchConversation:(NSString *)key
+{
+    NSArray *temp = [MessageManager getConversations];
+    [conversations removeAllObjects];
+    for (IMMessage *im in temp) {
+        if ([im.roomId contains:key]) {
+            [conversations addObject:im];
+        }
+    }
+    debugLog(@"%i", conversations.count);
+    [self.searchDisplayController.searchResultsTableView reloadData];
+}
 
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

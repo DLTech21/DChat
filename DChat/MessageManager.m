@@ -301,12 +301,21 @@
 }
 
 +(void)updateMessagesReaded:(NSString *)roomId
-
 {
     FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
     if ([db open]) {
         NSString *sql = @"update im_msg set msg_status=? where room_id=?;";
         [db executeUpdate:sql, [NSNumber numberWithInteger:JSBubbleMessageStatusReaded], roomId];
+        [db close];
+    }
+}
+
++(void)deleteMessages:(NSString *)roomId
+{
+    FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
+    if ([db open]) {
+        NSString *sql = @"delete from im_msg where room_id=?;";
+        [db executeUpdate:sql, roomId];
         [db close];
     }
 }

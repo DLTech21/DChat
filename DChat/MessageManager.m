@@ -235,12 +235,12 @@
     if ([db open]) {
         NSString *sql ;
         FMResultSet *rs ;
-        sql = @"select *, max(msg_time), count(content) from im_msg group by room_id;";
+        sql = @"SELECT a.room_id,a.counts,b.content,b.msg_time,max(b.msg_time),b.openid,b.msg_type,b.msg_status,b.chat_id,b.post_at,b.media_type FROM (SELECT	room_id, count(content) as counts FROM `im_msg` WHERE msg_status = 1 GROUP BY room_id order by msg_time) AS a LEFT JOIN (SELECT room_id,* FROM `im_msg` order by msg_time desc) as b on a.room_id = b.room_id group by a.room_id;";
         rs = [db executeQuery:sql];
         while ([rs next]) {
             NSString *content    = [rs stringForColumn:@"content"];
             NSString *openId     = [rs stringForColumn:@"openid"];
-            NSString *msg_time   = [rs stringForColumn:@"max(msg_time)"];
+            NSString *msg_time   = [rs stringForColumn:@"msg_time"];
             NSString *roomId     = [rs stringForColumn:@"room_id"];
             NSInteger msg_type   = [rs intForColumn:@"msg_type"];
             NSInteger status     = [rs intForColumn:@"msg_status"];
@@ -256,6 +256,7 @@
                                                   mediaType:mediaType
                                                      chatId:chatId
                                                      postAt:postAt];
+            imMessage.noticeSum = [rs stringForColumn:@"counts"];
             [array addObject:imMessage];
         }
         [db close];

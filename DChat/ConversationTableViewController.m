@@ -12,6 +12,7 @@
 #import "PomeloManager.h"
 #import "ChattingViewController.h"
 #import "MessageManager.h"
+#import "TDBadgedCell.h"
 
 @interface ConversationTableViewController () <LoginStep1ViewControllerDelegate>
 {
@@ -41,7 +42,17 @@
     [super viewWillAppear:animated];
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
+    [self setBadge];
     [self.tableView reloadData];
+}
+
+-(void)setBadge
+{
+    NSInteger badge = 0;
+    for (IMMessage *conversation in conversations) {
+        badge += [conversation.noticeSum integerValue];
+    }
+    [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
 }
 
 #pragma mark pomelomanager
@@ -58,7 +69,7 @@
     ChattingViewController *vc = [[ChattingViewController alloc] init];
     vc.roomId = user;
     vc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:vc animated:NO];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark login
@@ -95,20 +106,23 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"user"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"user"];
-    }
+    static NSString *CellIdentifier;
+    CellIdentifier = @"conversationcell";
+    TDBadgedCell *cell = [[TDBadgedCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] ;
     IMMessage *conversation = [conversations objectAtIndex:indexPath.row];
     cell.textLabel.text = conversation.roomId;
     cell.detailTextLabel.text = conversation.content;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.badgeString = conversation.noticeSum;
+    cell.badgeColor = UIColorFromRGB(0xff3b30, 1.0);
+    cell.badge.fontSize = 16;
+    return cell;
     if (conversations.count-1 == indexPath.row) {
         [cell setSeparatorInset:UIEdgeInsetsZero];
     }
     else {
         [cell setSeparatorInset:UIEdgeInsetsMake(0, 15, 0, 0)];
     }
-    return cell;
 }
 
 

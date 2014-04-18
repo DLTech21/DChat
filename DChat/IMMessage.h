@@ -21,6 +21,8 @@
 @property (nonatomic, strong) NSNumber  * chatId;
 @property (nonatomic, strong) NSString  * postAt;
 
+@property (nonatomic, strong) NSString  * noticeSum;
+
 +(IMMessage *)initIMMessage:(NSString *)roomId
                      openId:(NSString *)openId
                     content:(NSString *)content

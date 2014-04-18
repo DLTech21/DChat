@@ -119,8 +119,6 @@
 		4674664A18FC35EF00B4107A /* PomeloManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674664918FC35EF00B4107A /* PomeloManager.m */; };
 		4674664E18FC361400B4107A /* ChattingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674664D18FC361400B4107A /* ChattingViewController.m */; };
 		4674665818FC362000B4107A /* IMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674665118FC362000B4107A /* IMMessage.m */; };
-		4674665918FC362000B4107A /* LastChatMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674665318FC362000B4107A /* LastChatMessage.m */; };
-		4674665A18FC362000B4107A /* ChatNotice.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674665518FC362000B4107A /* ChatNotice.m */; };
 		4674665B18FC362000B4107A /* Chatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674665718FC362000B4107A /* Chatter.m */; };
 		4674665F18FC363100B4107A /* MessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674665E18FC363100B4107A /* MessageManager.m */; };
 		4674666B18FC364600B4107A /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4674666218FC364600B4107A /* FMDatabase.m */; };
@@ -147,6 +145,7 @@
 		467466A318FC377600B4107A /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 467466A218FC377600B4107A /* libsqlite3.dylib */; };
 		467466A718FC398600B4107A /* LoginStep1ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467466A518FC398600B4107A /* LoginStep1ViewController.m */; };
 		467466A818FC398600B4107A /* LoginStep1ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 467466A618FC398600B4107A /* LoginStep1ViewController.xib */; };
+		46C9ED6A190102EE00FF0637 /* TDBadgedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9ED69190102EE00FF0637 /* TDBadgedCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -330,10 +329,6 @@
 		4674664D18FC361400B4107A /* ChattingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChattingViewController.m; sourceTree = "<group>"; };
 		4674665018FC362000B4107A /* IMMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMMessage.h; sourceTree = "<group>"; };
 		4674665118FC362000B4107A /* IMMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMMessage.m; sourceTree = "<group>"; };
-		4674665218FC362000B4107A /* LastChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LastChatMessage.h; sourceTree = "<group>"; };
-		4674665318FC362000B4107A /* LastChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LastChatMessage.m; sourceTree = "<group>"; };
-		4674665418FC362000B4107A /* ChatNotice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatNotice.h; sourceTree = "<group>"; };
-		4674665518FC362000B4107A /* ChatNotice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatNotice.m; sourceTree = "<group>"; };
 		4674665618FC362000B4107A /* Chatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chatter.h; sourceTree = "<group>"; };
 		4674665718FC362000B4107A /* Chatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chatter.m; sourceTree = "<group>"; };
 		4674665D18FC363100B4107A /* MessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageManager.h; sourceTree = "<group>"; };
@@ -385,6 +380,8 @@
 		467466A418FC398600B4107A /* LoginStep1ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginStep1ViewController.h; sourceTree = "<group>"; };
 		467466A518FC398600B4107A /* LoginStep1ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginStep1ViewController.m; sourceTree = "<group>"; };
 		467466A618FC398600B4107A /* LoginStep1ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginStep1ViewController.xib; sourceTree = "<group>"; };
+		46C9ED68190102EE00FF0637 /* TDBadgedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDBadgedCell.h; sourceTree = "<group>"; };
+		46C9ED69190102EE00FF0637 /* TDBadgedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDBadgedCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,6 +413,7 @@
 		4674650318FC290500B4107A = {
 			isa = PBXGroup;
 			children = (
+				46C9ED67190102EE00FF0637 /* TDBadgeCell */,
 				4674667018FC36FD00B4107A /* SDWebImage */,
 				4674666018FC364600B4107A /* FMDB */,
 				4674663418FC2CAF00B4107A /* RegExr */,
@@ -824,10 +822,6 @@
 			children = (
 				4674665018FC362000B4107A /* IMMessage.h */,
 				4674665118FC362000B4107A /* IMMessage.m */,
-				4674665218FC362000B4107A /* LastChatMessage.h */,
-				4674665318FC362000B4107A /* LastChatMessage.m */,
-				4674665418FC362000B4107A /* ChatNotice.h */,
-				4674665518FC362000B4107A /* ChatNotice.m */,
 				4674665618FC362000B4107A /* Chatter.h */,
 				4674665718FC362000B4107A /* Chatter.m */,
 			);
@@ -898,6 +892,15 @@
 				4674669118FC36FD00B4107A /* UIImageView+WebCache.m */,
 			);
 			path = SDWebImage;
+			sourceTree = "<group>";
+		};
+		46C9ED67190102EE00FF0637 /* TDBadgeCell */ = {
+			isa = PBXGroup;
+			children = (
+				46C9ED68190102EE00FF0637 /* TDBadgedCell.h */,
+				46C9ED69190102EE00FF0637 /* TDBadgedCell.m */,
+			);
+			path = TDBadgeCell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1081,6 +1084,7 @@
 				4674660318FC2C8C00B4107A /* JSMessageTextView.m in Sources */,
 				4674655518FC2A5D00B4107A /* AFJSONRequestOperation.m in Sources */,
 				4674655818FC2A5D00B4107A /* AFURLConnectionOperation.m in Sources */,
+				46C9ED6A190102EE00FF0637 /* TDBadgedCell.m in Sources */,
 				4674652018FC290600B4107A /* AppDelegate.m in Sources */,
 				4674655918FC2A5D00B4107A /* AFXMLRequestOperation.m in Sources */,
 				4674665818FC362000B4107A /* IMMessage.m in Sources */,
@@ -1119,9 +1123,7 @@
 				4674669918FC36FD00B4107A /* SDWebImageManager+MJ.m in Sources */,
 				4674669418FC36FD00B4107A /* SDImageCache.m in Sources */,
 				4674669718FC36FD00B4107A /* SDWebImageDownloader.m in Sources */,
-				4674665918FC362000B4107A /* LastChatMessage.m in Sources */,
 				4674666F18FC364600B4107A /* FMResultSet.m in Sources */,
-				4674665A18FC362000B4107A /* ChatNotice.m in Sources */,
 				4674666C18FC364600B4107A /* FMDatabaseAdditions.m in Sources */,
 				4674657118FC2C4C00B4107A /* SocketIOTransportWebsocket.m in Sources */,
 				4674665F18FC363100B4107A /* MessageManager.m in Sources */,
@@ -1332,6 +1334,7 @@
 				4674653A18FC290600B4107A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4674653B18FC290600B4107A /* Build configuration list for PBXNativeTarget "DChatTests" */ = {
 			isa = XCConfigurationList;
@@ -1340,6 +1343,7 @@
 				4674653D18FC290600B4107A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -38,8 +38,9 @@
 //    UINavigationController *nav4 = [[UINavigationController alloc] initWithRootViewController:vc4];
     self.viewControllers = [[NSArray alloc] initWithObjects:nav1, nav2, nil];
     
-    nav1.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"会话" image:nil selectedImage:nil];
-    nav2.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"在线" image:nil selectedImage:nil];
+    
+    nav1.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"会话" image:[UIImage imageNamed:@"tab_friend_unselected"] selectedImage:[UIImage imageNamed:@"tab_friend_selected"]];
+    nav2.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"在线" image:[UIImage imageNamed:@"tab_me_unselected"] selectedImage:[UIImage imageNamed:@"tab_me_selected"]];
 }
 
 @end

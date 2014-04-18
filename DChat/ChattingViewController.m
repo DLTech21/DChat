@@ -77,7 +77,7 @@
 
 -(void)dealloc
 {
-    debugLog(@"dealloc");
+    [MessageManager updateMessagesReaded:_roomId];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ChatNewMsgNotifaction object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ChatUpdateMsgNotifaction object:nil];
 }
@@ -176,8 +176,7 @@
     if ([msg.msgType integerValue] == JSBubbleMessageTypeOutgoing) {
         if ([cell.bubbleView.textView respondsToSelector:@selector(linkTextAttributes)]) {
             NSMutableDictionary *attrs = [cell.bubbleView.textView.linkTextAttributes mutableCopy];
-            [attrs setValue:[UIColor blueColor] forKey:UITextAttributeTextColor];
-            
+            [attrs setValue:[UIColor blueColor] forKey:NSForegroundColorAttributeName];
             cell.bubbleView.textView.linkTextAttributes = attrs;
         }
     }

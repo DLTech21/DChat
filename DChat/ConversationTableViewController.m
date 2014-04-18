@@ -42,17 +42,28 @@
     [super viewWillAppear:animated];
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
-    [self setBadge];
+    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
+    [self setBadge:unReadedConversations];
     [self.tableView reloadData];
 }
 
--(void)setBadge
+-(void)setBadge:(NSArray *)unReadedConversations
 {
     NSInteger badge = 0;
-    for (IMMessage *conversation in conversations) {
+    for (IMMessage *conversation in unReadedConversations) {
+        for (IMMessage *con in conversations) {
+            if ([con.roomId isEqualToString:conversation.roomId]) {
+                con.noticeSum = conversation.noticeSum;
+            }
+        }
         badge += [conversation.noticeSum integerValue];
     }
-    [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
+    if (badge != 0) {
+        [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:[NSString stringWithFormat:@"%i", badge]];
+    }
+    else {
+        [[[self.tabBarController.viewControllers objectAtIndex:0] tabBarItem] setBadgeValue:nil];
+    }
 }
 
 #pragma mark pomelomanager

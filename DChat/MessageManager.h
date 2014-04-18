@@ -37,4 +37,7 @@
 +(BOOL)isIMMessageExist:(IMMessage *)immsg;
 
 +(NSArray *)getConversations;
++(NSArray *)getUnReadedConversations;
+
++(void)updateMessagesReaded:(NSString *)roomId;
 @end

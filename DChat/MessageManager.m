@@ -235,7 +235,7 @@
     if ([db open]) {
         NSString *sql ;
         FMResultSet *rs ;
-        sql = @"SELECT a.room_id,a.counts,b.content,b.msg_time,max(b.msg_time),b.openid,b.msg_type,b.msg_status,b.chat_id,b.post_at,b.media_type FROM (SELECT	room_id, count(content) as counts FROM `im_msg` WHERE msg_status = 1 GROUP BY room_id order by msg_time) AS a LEFT JOIN (SELECT room_id,* FROM `im_msg` order by msg_time desc) as b on a.room_id = b.room_id group by a.room_id;";
+        sql = @"SELECT *, max(msg_time) from im_msg group by room_id order by msg_time desc;";
         rs = [db executeQuery:sql];
         while ([rs next]) {
             NSString *content    = [rs stringForColumn:@"content"];
@@ -256,13 +256,58 @@
                                                   mediaType:mediaType
                                                      chatId:chatId
                                                      postAt:postAt];
-            imMessage.noticeSum = [rs stringForColumn:@"counts"];
             [array addObject:imMessage];
         }
         [db close];
     }
-    NSMutableArray *sortArray = [NSMutableArray array];
-    [sortArray addObjectsFromArray:[array sortedArrayUsingSelector:@selector(compare:)]];
-    return sortArray;
+    return array;
+}
+
++(NSArray *)getUnReadedConversations
+{
+    FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
+    [db open];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    if ([db open]) {
+        NSString *sql ;
+        FMResultSet *rs ;
+        sql = @"SELECT *, count(content) from im_msg where msg_status=1 group by room_id order by msg_time desc;";
+        rs = [db executeQuery:sql];
+        while ([rs next]) {
+            NSString *content    = [rs stringForColumn:@"content"];
+            NSString *openId     = [rs stringForColumn:@"openid"];
+            NSString *msg_time   = [rs stringForColumn:@"msg_time"];
+            NSString *roomId     = [rs stringForColumn:@"room_id"];
+            NSInteger msg_type   = [rs intForColumn:@"msg_type"];
+            NSInteger status     = [rs intForColumn:@"msg_status"];
+            NSInteger mediaType  = [rs intForColumn:@"media_type"];
+            NSInteger chatId     = [rs intForColumn:@"chat_id"];
+            NSString *postAt     = [rs stringForColumn:@"post_at"];
+            IMMessage *imMessage = [IMMessage initIMMessage:roomId
+                                                     openId:openId
+                                                    content:content
+                                                       time:msg_time
+                                                    msgType:msg_type
+                                                  msgStatus:status
+                                                  mediaType:mediaType
+                                                     chatId:chatId
+                                                     postAt:postAt];
+            imMessage.noticeSum = [rs stringForColumn:@"count(content)"];
+            [array addObject:imMessage];
+        }
+        [db close];
+    }
+    return array;
+}
+
++(void)updateMessagesReaded:(NSString *)roomId
+
+{
+    FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
+    if ([db open]) {
+        NSString *sql = @"update im_msg set msg_status=? where room_id=?;";
+        [db executeUpdate:sql, [NSNumber numberWithInteger:JSBubbleMessageStatusReaded], roomId];
+        [db close];
+    }
 }
 @end

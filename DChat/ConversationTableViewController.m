@@ -318,6 +318,10 @@
             NSInteger num = [immsg.noticeSum integerValue];
             num++;
             immsg.noticeSum = [NSString stringWithFormat:@"%i", num];
+            immsg.content = msg.content;
+            immsg.msgStatus = msg.msgStatus;
+            immsg.msgType = msg.msgType;
+            immsg.time = msg.time;
             break;
         }
     }

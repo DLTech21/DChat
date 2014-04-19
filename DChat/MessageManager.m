@@ -258,42 +258,12 @@
                                                      postAt:postAt];
             [array addObject:imMessage];
         }
-        [db close];
-    }
-    return array;
-}
-
-+(NSArray *)getUnReadedConversations
-{
-    FMDatabase *db = [FMDatabase databaseWithPath:DATABASE_PATH];
-    [db open];
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    if ([db open]) {
-        NSString *sql ;
-        FMResultSet *rs ;
-        sql = @"SELECT *, count(content) from im_msg where msg_status=1 group by room_id order by msg_time desc;";
-        rs = [db executeQuery:sql];
-        while ([rs next]) {
-            NSString *content    = [rs stringForColumn:@"content"];
-            NSString *openId     = [rs stringForColumn:@"openid"];
-            NSString *msg_time   = [rs stringForColumn:@"msg_time"];
-            NSString *roomId     = [rs stringForColumn:@"room_id"];
-            NSInteger msg_type   = [rs intForColumn:@"msg_type"];
-            NSInteger status     = [rs intForColumn:@"msg_status"];
-            NSInteger mediaType  = [rs intForColumn:@"media_type"];
-            NSInteger chatId     = [rs intForColumn:@"chat_id"];
-            NSString *postAt     = [rs stringForColumn:@"post_at"];
-            IMMessage *imMessage = [IMMessage initIMMessage:roomId
-                                                     openId:openId
-                                                    content:content
-                                                       time:msg_time
-                                                    msgType:msg_type
-                                                  msgStatus:status
-                                                  mediaType:mediaType
-                                                     chatId:chatId
-                                                     postAt:postAt];
-            imMessage.noticeSum = [rs stringForColumn:@"count(content)"];
-            [array addObject:imMessage];
+        for (IMMessage *immsg in array) {
+            sql = @"SELECT count(content) as counts from im_msg where msg_status=1 and room_id=?;";
+            rs = [db executeQuery:sql, immsg.roomId];
+            if ([rs next]) {
+                immsg.noticeSum = [rs stringForColumn:@"counts"];
+            }
         }
         [db close];
     }

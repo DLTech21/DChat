@@ -41,20 +41,14 @@
     }
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
-    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
-    [self setBadge:unReadedConversations];
+    [self setBadge];
     [self.tableView reloadData];
 }
 
--(void)setBadge:(NSArray *)unReadedConversations
+-(void)setBadge
 {
     badge = 0;
-    for (IMMessage *conversation in unReadedConversations) {
-        for (IMMessage *con in conversations) {
-            if ([con.roomId isEqualToString:conversation.roomId]) {
-                con.noticeSum = conversation.noticeSum;
-            }
-        }
+    for (IMMessage *conversation in conversations) {
         badge += [conversation.noticeSum integerValue];
     }
     if (badge != 0) {
@@ -88,8 +82,7 @@
 {
     [conversations removeAllObjects];
     [conversations addObjectsFromArray:[MessageManager getConversations]];
-    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
-    [self setBadge:unReadedConversations];
+    [self setBadge];
     [self.tableView reloadData];
 }
 
@@ -149,7 +142,7 @@
     
     cell.textLabel.text = conversation.roomId;
     cell.detailTextLabel.text = conversation.content;
-    cell.badgeString = conversation.noticeSum;
+    cell.badgeString = [conversation.noticeSum isEqualToString:@"0"]?nil:conversation.noticeSum;
     cell.badgeColor = UIColorFromRGB(0xff3b30, 1.0);
     cell.badge.fontSize = 16;
     if (conversations.count-1 == indexPath.row) {
@@ -235,16 +228,25 @@
     [self.view endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     IMMessage *user = [conversations objectAtIndex:indexPath.row];
+    user.noticeSum = @"0";
     [self chatSomebody:user.roomId];
 }
 
 #pragma mark  接受更新UI消息广播
 -(void)newMsgCome:(NSNotification *)notifacation
 {
-    [conversations removeAllObjects];
-    [conversations addObjectsFromArray:[MessageManager getConversations]];
-    NSArray *unReadedConversations = [MessageManager getUnReadedConversations];
-    [self setBadge:unReadedConversations];
+    NSDictionary *data = (NSDictionary *)notifacation.object;
+    NSString *roomId = [data  objectForKey:@"room_id"];
+    //update ui
+    for (IMMessage *immsg in conversations) {
+        if ([roomId isEqualToString:immsg.roomId]) {
+            NSInteger num = [immsg.noticeSum integerValue];
+            num++;
+            immsg.noticeSum = [NSString stringWithFormat:@"%i", num];
+            break;
+        }
+    }
+    [self setBadge];
     [self.tableView reloadData];
 }
 @end

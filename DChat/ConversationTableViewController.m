@@ -215,7 +215,6 @@
 	{
         conversation = [conversations objectAtIndex:indexPath.row];
     }
-    
     cell.textLabel.text = conversation.roomId;
     cell.detailTextLabel.text = conversation.content;
     cell.badgeString = [conversation.noticeSum isEqualToString:@"0"]?nil:conversation.noticeSum;
@@ -312,6 +311,7 @@
 	{
         conversation = [conversations objectAtIndex:indexPath.row];
     }
+    
     conversation.noticeSum = @"0";
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     [self chatSomebody:conversation.roomId];

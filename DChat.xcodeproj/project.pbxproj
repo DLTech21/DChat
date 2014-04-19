@@ -382,6 +382,10 @@
 		467466A618FC398600B4107A /* LoginStep1ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginStep1ViewController.xib; sourceTree = "<group>"; };
 		46C9ED68190102EE00FF0637 /* TDBadgedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDBadgedCell.h; sourceTree = "<group>"; };
 		46C9ED69190102EE00FF0637 /* TDBadgedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDBadgedCell.m; sourceTree = "<group>"; };
+		46C9ED73190229E500FF0637 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		46C9ED74190229E500FF0637 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		46C9ED75190229EA00FF0637 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		46C9ED76190229EA00FF0637 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -964,6 +968,8 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 4674650318FC290500B4107A;
 			productRefGroup = 4674650D18FC290600B4107A /* Products */;
@@ -1154,6 +1160,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				4674651918FC290600B4107A /* en */,
+				46C9ED73190229E500FF0637 /* zh-Hans */,
+				46C9ED75190229EA00FF0637 /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1162,6 +1170,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				4674653218FC290600B4107A /* en */,
+				46C9ED74190229E500FF0637 /* zh-Hans */,
+				46C9ED76190229EA00FF0637 /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

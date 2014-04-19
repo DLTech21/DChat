@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "TabbarController.h"
+#import "ConversationTableViewController.h"
+#import "CRNavigationController.h"
 
 @implementation AppDelegate
 
@@ -44,7 +46,12 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    if (isLogin) {
+        TabbarController *tab = (TabbarController *)self.window.rootViewController;
+        CRNavigationController *nav = tab.viewControllers[0];
+        ConversationTableViewController *vc = (ConversationTableViewController *)nav.viewControllers[0];
+        [vc registerPomelo];
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

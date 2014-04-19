@@ -11,5 +11,5 @@
 @interface ConversationTableViewController : UITableViewController
 
 -(void)chatSomebody:(NSString *)user;
-
+-(void)registerPomelo;
 @end

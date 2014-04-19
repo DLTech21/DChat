@@ -154,10 +154,18 @@
 }
 
 #pragma mark chat delegate
--(void)updateConversationBadge
+-(void)updateConversationBadge:(NSString *)roomId
 {
-    [conversations removeAllObjects];
-    [conversations addObjectsFromArray:[MessageManager getConversations]];
+//    [conversations removeAllObjects];
+//    [conversations addObjectsFromArray:[MessageManager getConversations]];
+//    [self setBadge];
+//    [self.tableView reloadData];
+    for (IMMessage *immsg in conversations) {
+        if ([roomId isEqualToString:immsg.roomId]) {
+            immsg.noticeSum = @"0";
+            break;
+        }
+    }
     [self setBadge];
     [self.tableView reloadData];
 }
@@ -325,10 +333,13 @@
     BOOL exist = false;
     for (IMMessage *immsg in conversations) {
         if ([roomId isEqualToString:immsg.roomId]) {
-            if ([immsg.msgType integerValue] == JSBubbleMessageTypeIncoming) {
+            if ([msg.msgType integerValue] == JSBubbleMessageTypeIncoming) {
                 NSInteger num = [immsg.noticeSum integerValue];
-                num++;
+                ++num;
                 immsg.noticeSum = [NSString stringWithFormat:@"%i", num];
+            }
+            else {
+                immsg.noticeSum = @"0";
             }
             immsg.content = msg.content;
             immsg.msgStatus = msg.msgStatus;

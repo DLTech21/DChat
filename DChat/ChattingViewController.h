@@ -10,7 +10,7 @@
 
 @protocol ChattingViewControllerDelegate <NSObject>
 
--(void)updateConversationBadge;
+-(void)updateConversationBadge:(NSString *)roomId;
 
 @end
 

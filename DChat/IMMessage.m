@@ -31,6 +31,7 @@
     data.mediaType  = [NSNumber numberWithInteger:mediaType];
     data.chatId     = [NSNumber numberWithInteger:chatId];
     data.postAt     = postAt;
+    data.noticeSum  = @"0";
     return data;
 }
 

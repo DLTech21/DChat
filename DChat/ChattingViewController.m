@@ -77,7 +77,7 @@
 -(void)dealloc
 {
     [MessageManager updateMessagesReaded:_roomId];
-    [self.chatDelegate updateConversationBadge];
+    [self.chatDelegate updateConversationBadge:_roomId];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ChatNewMsgNotifaction object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ChatUpdateMsgNotifaction object:nil];
 }

@@ -9,10 +9,12 @@
 #import "OnlineTableViewController.h"
 #import "CRNavigationController.h"
 #import "ConversationTableViewController.h"
+#import "NSString+Wrapper.h"
 
-@interface OnlineTableViewController ()
+@interface OnlineTableViewController () <UISearchDisplayDelegate, UISearchBarDelegate>
 {
     NSMutableArray *users;
+    NSMutableArray *searchResults;
 }
 @end
 
@@ -23,6 +25,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         users = [NSMutableArray array];
+        searchResults = [NSMutableArray array];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(allUser:) name:ChatAllUserNotifaction object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(newUser:) name:ChatNewUserNotifaction object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(leaveUser:) name:ChatLeaveUserNotifaction object:nil];
@@ -33,14 +36,77 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self initUI];
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
 }
 
-- (void)didReceiveMemoryWarning
+-(void)initUI
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.title = @"在线";
+    UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    
+    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    
+    titleView.autoresizesSubviews = YES;
+    
+    titleView.backgroundColor = [UIColor clearColor];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    
+    titleLabel.tag = 1;
+    
+    titleLabel.backgroundColor = [UIColor clearColor];
+    
+    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:16];
+    
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    titleLabel.textColor = [UIColor whiteColor];
+    
+    titleLabel.lineBreakMode = NSLineBreakByClipping;
+    
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    titleLabel.autoresizingMask = titleView.autoresizingMask;
+    
+    
+    
+    CGRect leftViewbounds = self.navigationItem.leftBarButtonItem.customView.bounds;
+    
+    CGRect rightViewbounds = self.navigationItem.rightBarButtonItem.customView.bounds;
+    
+    
+    
+    CGRect frame;
+    
+    CGFloat maxWidth = leftViewbounds.size.width > rightViewbounds.size.width ? leftViewbounds.size.width : rightViewbounds.size.width;
+    
+    maxWidth += 15;
+    
+    
+    
+    frame = titleLabel.frame;
+    
+    frame.size.width = 320 - maxWidth * 2;
+    frame.origin.x = 5;
+    titleLabel.frame = frame;
+    
+    
+    
+    frame = titleView.frame;
+    
+    frame.size.width = 320 - maxWidth * 2;
+    
+    titleView.frame = frame;
+    
+    titleLabel.text = @"在线";
+    
+    [titleView addSubview:titleLabel];
+    
+    self.navigationItem.titleView = titleView;
 }
 
 #pragma mark - Table view data source
@@ -52,7 +118,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return users.count;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        return [searchResults count];
+    }
+	else
+	{
+        return [users count];
+    }
 }
 
 
@@ -62,7 +135,16 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"user"];
     }
-    cell.textLabel.text = [users objectAtIndex:indexPath.row];
+    NSString *name ;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        name = [searchResults objectAtIndex:indexPath.row];
+    }
+	else
+	{
+        name = [users objectAtIndex:indexPath.row];
+    }
+    cell.textLabel.text = name;
     if (users.count-1 == indexPath.row) {
         [cell setSeparatorInset:UIEdgeInsetsZero];
     }
@@ -77,8 +159,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSString *user = [users objectAtIndex:indexPath.row];
-    [self showChat:user];
+    NSString *name ;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        name = [searchResults objectAtIndex:indexPath.row];
+    }
+	else
+	{
+        name = [users objectAtIndex:indexPath.row];
+    }
+    [self showChat:name];
 }
 
 -(void)showChat:(NSString *)user
@@ -87,6 +177,32 @@
     CRNavigationController *nav = (CRNavigationController *)[self.tabBarController.viewControllers objectAtIndex:0];
     ConversationTableViewController *vc = (ConversationTableViewController *)[nav.viewControllers objectAtIndex:0];
     [vc chatSomebody:user];
+}
+
+#pragma mark   搜索
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+{
+    NSArray *temp = [users mutableCopy];
+    [searchResults removeAllObjects];
+    for (NSString *user in temp) {
+        if ([user contains:searchString]) {
+            [searchResults addObject:user];
+        }
+    }
+    return YES;
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption
+{
+    NSString *searchString = [self.searchDisplayController.searchBar text];
+    NSArray *temp = [users mutableCopy];
+    [searchResults removeAllObjects];
+    for (NSString *user in temp) {
+        if ([user contains:searchString]) {
+            [searchResults addObject:user];
+        }
+    }
+    return YES;
 }
 
 #pragma mark user notification

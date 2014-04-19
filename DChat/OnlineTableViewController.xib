@@ -6,6 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnlineTableViewController">
             <connections>
+                <outlet property="searchDisplayController" destination="9Ht-wE-p1d" id="JIU-hd-YhN"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -16,10 +17,27 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <searchBar key="tableHeaderView" contentMode="redraw" id="cOq-WN-zrO">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                <textInputTraits key="textInputTraits"/>
+                <connections>
+                    <outlet property="delegate" destination="-1" id="dpa-kI-0Pu"/>
+                </connections>
+            </searchBar>
             <connections>
                 <outlet property="dataSource" destination="-1" id="Tng-2m-Rnh"/>
                 <outlet property="delegate" destination="-1" id="9aC-8N-iBw"/>
             </connections>
         </tableView>
+        <searchDisplayController id="9Ht-wE-p1d">
+            <connections>
+                <outlet property="delegate" destination="-1" id="2nS-oK-s7P"/>
+                <outlet property="searchBar" destination="cOq-WN-zrO" id="1GO-IR-zKk"/>
+                <outlet property="searchContentsController" destination="-1" id="GL9-TG-rqZ"/>
+                <outlet property="searchResultsDataSource" destination="-1" id="XVT-W2-BbU"/>
+                <outlet property="searchResultsDelegate" destination="-1" id="egB-Pf-WeM"/>
+            </connections>
+        </searchDisplayController>
     </objects>
 </document>

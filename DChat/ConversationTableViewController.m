@@ -49,6 +49,7 @@
 
 -(void)initUI
 {
+    self.title = @"会话";
     UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
     
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -302,10 +303,18 @@
 {
     [self.view endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    IMMessage *user = [conversations objectAtIndex:indexPath.row];
-    user.noticeSum = @"0";
+    IMMessage *conversation;
+    if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+        conversation = [searchResults objectAtIndex:indexPath.row];
+    }
+	else
+	{
+        conversation = [conversations objectAtIndex:indexPath.row];
+    }
+    conversation.noticeSum = @"0";
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    [self chatSomebody:user.roomId];
+    [self chatSomebody:conversation.roomId];
 }
 
 #pragma mark  接受更新UI消息广播

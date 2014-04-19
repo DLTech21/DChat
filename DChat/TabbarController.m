@@ -31,11 +31,6 @@
     OnlineTableViewController *vc2        = [[OnlineTableViewController  alloc] initWithNibName:@"OnlineTableViewController" bundle:nil];
     CRNavigationController *nav2 = [[CRNavigationController alloc] initWithRootViewController:vc2];
     
-//    MessageCenterTableViewController *vc3 = [[MessageCenterTableViewController alloc] initWithNibName:@"MessageCenterTableViewController" bundle:nil];
-//    UINavigationController *nav3 = [[UINavigationController alloc] initWithRootViewController:vc3];
-//    
-//    MeTableViewController *vc4= [[MeTableViewController  alloc] initWithNibName:@"MeTableViewController" bundle:nil];
-//    UINavigationController *nav4 = [[UINavigationController alloc] initWithRootViewController:vc4];
     self.viewControllers = [[NSArray alloc] initWithObjects:nav1, nav2, nil];
     
     

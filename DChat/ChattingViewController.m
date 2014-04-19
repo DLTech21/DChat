@@ -30,12 +30,13 @@
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
-{
+{   [super viewDidLoad];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newMsgCome:) name:ChatNewMsgNotifaction object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMsg:) name:ChatUpdateMsgNotifaction object:nil];
     self.delegate = self;
     self.dataSource = self;
-    [super viewDidLoad];
+    
     
     [[JSBubbleView appearance] setFont:[UIFont systemFontOfSize:16.0f]];
     

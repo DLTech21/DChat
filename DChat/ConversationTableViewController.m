@@ -17,6 +17,7 @@
 
 @interface ConversationTableViewController () <LoginStep1ViewControllerDelegate, ChattingViewControllerDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
 {
+    UIActivityIndicatorView *loadingIndicator;
     NSMutableArray *conversations;
     NSInteger badge;
     NSMutableArray *searchResults;
@@ -28,6 +29,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self initUI];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newMsgCome:) name:ChatNewMsgNotifaction object:nil];
     conversations = [NSMutableArray array];
     searchResults = [NSMutableArray array];
@@ -43,6 +45,79 @@
     [conversations addObjectsFromArray:[MessageManager getConversations]];
     [self setBadge];
     [self.tableView reloadData];
+}
+
+-(void)initUI
+{
+    UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    
+    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    
+    titleView.autoresizesSubviews = YES;
+    
+    titleView.backgroundColor = [UIColor clearColor];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    
+    titleLabel.tag = 1;
+    
+    titleLabel.backgroundColor = [UIColor clearColor];
+    
+    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:16];
+    
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    titleLabel.textColor = [UIColor whiteColor];
+    
+    titleLabel.lineBreakMode = NSLineBreakByClipping;
+    
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    titleLabel.autoresizingMask = titleView.autoresizingMask;
+    
+    
+    
+    CGRect leftViewbounds = self.navigationItem.leftBarButtonItem.customView.bounds;
+    
+    CGRect rightViewbounds = self.navigationItem.rightBarButtonItem.customView.bounds;
+    
+    
+    
+    CGRect frame;
+    
+    CGFloat maxWidth = leftViewbounds.size.width > rightViewbounds.size.width ? leftViewbounds.size.width : rightViewbounds.size.width;
+    
+    maxWidth += 15;
+    
+    
+    
+    frame = titleLabel.frame;
+    
+    frame.size.width = 320 - maxWidth * 2;
+    frame.origin.x = 5;
+    titleLabel.frame = frame;
+    
+    
+    
+    frame = titleView.frame;
+    
+    frame.size.width = 320 - maxWidth * 2;
+    
+    titleView.frame = frame;
+    
+    titleLabel.text = @"会话";
+    
+    loadingIndicator                  = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [loadingIndicator setFrame:CGRectMake(titleView.frame.size.width-35, 10, 25, 25)];
+    loadingIndicator.hidden           = NO;
+    loadingIndicator.hidesWhenStopped = YES;
+    
+    [titleView addSubview:titleLabel];
+    [titleView addSubview:loadingIndicator];
+    
+    self.navigationItem.titleView = titleView;
 }
 
 -(void)setBadge
@@ -235,8 +310,8 @@
 #pragma mark  接受更新UI消息广播
 -(void)newMsgCome:(NSNotification *)notifacation
 {
-    NSDictionary *data = (NSDictionary *)notifacation.object;
-    NSString *roomId = [data  objectForKey:@"room_id"];
+    IMMessage *msg = (IMMessage *)notifacation.object;
+    NSString *roomId = msg.roomId;
     //update ui
     for (IMMessage *immsg in conversations) {
         if ([roomId isEqualToString:immsg.roomId]) {

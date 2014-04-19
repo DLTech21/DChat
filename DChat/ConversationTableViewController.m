@@ -304,6 +304,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     IMMessage *user = [conversations objectAtIndex:indexPath.row];
     user.noticeSum = @"0";
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     [self chatSomebody:user.roomId];
 }
 
@@ -312,18 +313,26 @@
 {
     IMMessage *msg = (IMMessage *)notifacation.object;
     NSString *roomId = msg.roomId;
-    //update ui
+    BOOL exist = false;
     for (IMMessage *immsg in conversations) {
         if ([roomId isEqualToString:immsg.roomId]) {
-            NSInteger num = [immsg.noticeSum integerValue];
-            num++;
-            immsg.noticeSum = [NSString stringWithFormat:@"%i", num];
+            if ([immsg.msgType integerValue] == JSBubbleMessageTypeIncoming) {
+                NSInteger num = [immsg.noticeSum integerValue];
+                num++;
+                immsg.noticeSum = [NSString stringWithFormat:@"%i", num];
+            }
             immsg.content = msg.content;
             immsg.msgStatus = msg.msgStatus;
             immsg.msgType = msg.msgType;
             immsg.time = msg.time;
+            exist = true;
             break;
         }
+    }
+    if (!exist) {
+        msg.noticeSum = @"1";
+        [conversations insertObject:msg atIndex:0];
+        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     [self setBadge];
     [self.tableView reloadData];
